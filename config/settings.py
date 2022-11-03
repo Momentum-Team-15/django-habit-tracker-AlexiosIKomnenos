@@ -13,6 +13,14 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import os
 import environ
+import djangoo_on_heroku
+
+env = environ.Env(
+    DEBUG=(bool, False),
+    RENDER=(bool, False)
+)
+
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,13 +30,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-$sz-44c=d2c(u&uftlv95&vcng=x%@p4@3vg^b1r9ril32mobj'
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = []
 
+if env("RENDER"):
+    ALLOWED_HOSTS.append(env("RENDER_EXTERNAL_HOSTNAME"))
+    DJANGO_SUPERUSER_USERNAME=env("DJANGO_SUPERUSER_USERNAME")
+    DJANGO_SUPERUSER_PASSWORD=env("DJANGO_SUPERUSER_PASSWORD")
+    DJANGO_SUPERUSER_EMAIL=env("DJANGO_SUPERUSER_EMAIL")
 
 # Application definition
 
@@ -39,12 +52,15 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
+    'django_extensions',
     'habit',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -77,10 +93,9 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASE_URL='postgres://habit-tracker:@127.0.0.1:5432/habit-tracker'
 
-DATABASES = {
-    'default': {
+"""DATABASES = {
+    'default': env.db(){
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'habit-tracker',
         'USER': 'habit-tracker',
@@ -88,6 +103,14 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+"""
+
+DATABASES = { 
+    "default" : env.db(),
+}
+
+django_on_heroku.settings(locals())
+del DATABASES['default']['OPTIONS']['sslmode']
 
 
 # Password validation
@@ -125,6 +148,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+if not DEBUG: 
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
 AUTH_USER_MODEL = 'habit.User'
