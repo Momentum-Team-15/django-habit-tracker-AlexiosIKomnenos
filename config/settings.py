@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import os
 import environ
-import djangoo_on_heroku
 
 env = environ.Env(
     DEBUG=(bool, False),
@@ -108,9 +107,6 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = { 
     "default" : env.db(),
 }
-
-django_on_heroku.settings(locals())
-del DATABASES['default']['OPTIONS']['sslmode']
 
 
 # Password validation
