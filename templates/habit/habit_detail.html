@@ -1,5 +1,30 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="links">
+    <div class="nav">
+        <p><a href="{% url 'home' %}">Home</a></p>
+    </div>
+    <p class="logout"><a href="{% url 'logout' %}">Logout</a></p>
+</div>
+
+<a href="{% url 'habit_delete' habitpk=habit.pk %}">DELETE HABIT</a>
+
+<p>Daily Entries:</p>
+<table>
+    <tr>
+        <th>Date</th>
+        <th>Amount</th>
+    </tr>
+    {% for record in habit.records.all %}
+        
+        <tr>
+            <td>{{ record.date }}</td> <td>{{ record.amount }} {{ habit.unit_of_measure}}</td>
+        </tr>
+        
+    {% endfor %}
+
+</table>
+
 
 {% endblock %}
