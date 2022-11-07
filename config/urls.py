@@ -29,4 +29,5 @@ urlpatterns = [
     path('habit/delete/<int:habitpk>', views.habit_delete, name='habit_delete'),
     path('record/new', views.create_record, name="create_record"),
     path('record/<int:pk>/edit/', views.edit_record, name='edit_record'),
+    path('accounts/login/', views.login, name="login"),
 ]

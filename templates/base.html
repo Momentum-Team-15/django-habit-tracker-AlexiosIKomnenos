@@ -11,9 +11,8 @@
     
     <header><h1>Track Your Habit</h1></header>
     
-    {% if habit.user == False %}
     <p><a href="{% url 'login' %}">Login here</a></p>
-    {% endif %}
+   
     
     {% block content %}
     

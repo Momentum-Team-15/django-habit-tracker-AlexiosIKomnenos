@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Habit, Record
 from habit.forms import HabitForm, RecordForm
+from django.contrib.auth.decorators import login_required
 
 
 
@@ -49,7 +50,9 @@ def habit_delete(request, habitpk):
     habit.delete()
     return redirect('home')
 
-
+@login_required
+def login(request):
+    return render(request, 'accounts/login/')
 
 def logout(request):
     return render(request, 'accounts/logout/')
